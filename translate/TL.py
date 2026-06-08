@@ -81,6 +81,32 @@ import numpy as np
 
 
 # ═══════════════════════════════════════════════════════════════════
+# 自动检测 Tesseract 路径
+# ═══════════════════════════════════════════════════════════════════
+
+def _find_tesseract() -> str:
+    """自动查找 tesseract.exe 路径。"""
+    # 常见安装路径
+    candidates = [
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        os.path.expanduser(r"~\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"),
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    # 尝试 PATH
+    import shutil
+    found = shutil.which("tesseract")
+    return found or ""
+
+
+_TESSERACT_PATH = _find_tesseract()
+if _TESSERACT_PATH and HAS_TESSERACT:
+    pytesseract.pytesseract.tesseract_cmd = _TESSERACT_PATH
+
+
+# ═══════════════════════════════════════════════════════════════════
 # 翻译核心模块
 # ═══════════════════════════════════════════════════════════════════
 
